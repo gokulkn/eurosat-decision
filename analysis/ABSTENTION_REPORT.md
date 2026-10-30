@@ -3,19 +3,33 @@
 **Status:** EXPLORATORY — test split reused, not a new accuracy measure.  
 **Repo:** eurosat-decision  
 **Pre-registration commit:** c74885e (eval/ABSTENTION_ANALYSIS_PREREG.md)  
-**Analysis commit:** (to be recorded at commit time)  
+**Analysis commit:** d2db99d (analysis: abstention by class (exploratory))  
 **Frozen weights:** models/best.pt (sha256 c6c5eed4be400498d8c43941e1115da72dcde94a37d73b358e6182923201716c)  
 **Frozen threshold:** 0.50 (rule: lowest threshold at which validation accuracy on answered cells >= 0.95; chosen on validation only; NOT re-tuned here)  
-**Per-sample predictions:** regenerated to analysis/test_softmax.csv using the frozen weights and training transform (ToTensor + ImageNet normalize, no resize). Overall accuracy verified = 3,899 / 4,050 = 0.9627, matching the committed test result.  
+**Per-sample predictions:** regenerated to analysis/test_softmax.csv using the frozen weights and training transform (ToTensor + ImageNet normalize, no resize). Regenerated predictions match the aggregate 3,899 / 4,050 = 0.9627 test result. Per-file originals were not saved; regenerated outputs are used throughout.  
 **Test split:** 4,050 samples (our own fixed stratified 70/15/15 split, seed 42; NOT a published benchmark split)  
 **Label order:** AnnualCrop, Forest, HerbaceousVegetation, Highway, Industrial, Pasture, PermanentCrop, Residential, River, SeaLake (indices 0–9)
 
 ---
 
-## Pre-registered questions and answers
+## Outcome: Frozen threshold 0.50 (pre-registered result first)
 
-### Question 1
-On the test split, for the classes SeaLake, River, Forest and HerbaceousVegetation, how often is the model confidently wrong (max softmax >= 0.50 and prediction != true label)?
+At the **frozen threshold of 0.50**, the abstention layer removes almost nothing: only **25 of 4,050 cells abstained** (coverage 0.9938). Nearly all confident errors remain answered:
+
+| class | support | confident errors | confident-error rate | confident errors among answered | answered accuracy |
+|-------|---------|------------------|---------------------|---------------------------------|-------------------|
+| SeaLake | 450 | 2 | 0.0044 | 2 | 0.9956 |
+| River | 375 | 17 | 0.0453 | 17 | 0.9545 |
+| Forest | 450 | 3 | 0.0067 | 3 | 0.9933 |
+| HerbaceousVegetation | 450 | 28 | 0.0622 | 28 | 0.9374 |
+
+**The frozen layer did NOT catch these confident errors.** At 0.50, HerbaceousVegetation still has 28 confident errors answered (6.22% of its support), River has 17 (4.53%), Forest has 3 (0.67%), and SeaLake has 2 (0.44%). Abstention at 0.50 removes only 25 cells total — essentially none of the confident errors are caught at the frozen rule.
+
+---
+
+## Pre-registered questions (descriptive threshold sweep)
+
+**Question 1:** On the test split, for the classes SeaLake, River, Forest and HerbaceousVegetation, how often is the model confidently wrong (max softmax >= 0.50 and prediction != true label)?
 
 | class | support | confident errors | confident-error rate (confident errors / support) |
 |-------|---------|------------------|---------------------------------------------------|
@@ -26,8 +40,7 @@ On the test split, for the classes SeaLake, River, Forest and HerbaceousVegetati
 
 HerbaceousVegetation has the highest confident-error rate (6.22%), followed by River (4.53%). SeaLake and Forest are low (0.44%, 0.67%).
 
-### Question 2
-Does abstention at 0.50 remove those confident errors, and at what coverage cost, per class?
+**Question 2:** Does abstention at 0.50 remove those confident errors, and at what coverage cost, per class?
 
 | class | total | answered | abstained | correct among answered | confident errors among answered | coverage (answered/total) | answered accuracy |
 |-------|-------|----------|-----------|------------------------|---------------------------------|---------------------------|-------------------|
@@ -38,8 +51,7 @@ Does abstention at 0.50 remove those confident errors, and at what coverage cost
 
 At threshold 0.50, abstention removes almost nothing (only 1–3 cells per class abstained), so nearly all confident errors remain answered. HerbaceousVegetation still has 28 confident errors answered (6.22% of its support). Coverage is near 1.00 for all four classes, so the coverage cost of abstention at 0.50 is minimal — but so is the error removal.
 
-### Question 3
-For the class pairs SeaLake–River and Forest–HerbaceousVegetation, what is the error rate among answered cells, and how does it change across thresholds 0.50 to 0.95 in steps of 0.05?
+**Question 3:** For the class pairs SeaLake–River and Forest–HerbaceousVegetation, what is the error rate among answered cells, and how does it change across thresholds 0.50 to 0.95 in steps of 0.05?
 
 **Pair SeaLake–River (total 825):**
 
@@ -71,7 +83,7 @@ For the class pairs SeaLake–River and Forest–HerbaceousVegetation, what is t
 | 0.90 | 816 | 4 | 0.0049 | 0.9067 | 812 | 4 |
 | 0.95 | 773 | 1 | 0.0013 | 0.8589 | 772 | 1 |
 
-For both pairs, raising the threshold monotonically reduces the error rate among answered cells and the count of confident wrong answers (fp), at a steady coverage cost.
+For both pairs, raising the threshold monotonically reduces the error rate among answered cells and the count of confident wrong answers (fp), at a steady coverage cost. **This threshold sweep is descriptive only — the 0.50 threshold was chosen on validation and is not re-tuned here.**
 
 ---
 
@@ -92,11 +104,11 @@ For both pairs, raising the threshold monotonically reduces the error rate among
 
 ---
 
-## Outcome
+## Outcome summary
 
-**Yes — the abstention layer does catch confident errors on the pre-registered pairs.** Raising the threshold from 0.50 steadily removes confident wrong answers (fp drops from 19→1 for SeaLake–River and 31→1 for Forest–HerbaceousVegetation) and reduces the answered error rate (from 0.0231→0.0013 and 0.0346→0.0013 respectively). However, this comes at a coverage cost: coverage falls from ~0.999 to ~0.92–0.86 across the pairs. At the frozen threshold 0.50 specifically, abstention removes almost nothing (only 25 cells abstained overall), so nearly all confident errors remain answered.
+At the **frozen threshold of 0.50**, the abstention layer does **not** catch confident errors — only 25 of 4,050 cells are abstained, and all confident errors (SeaLake 2, River 17, Forest 3, HerbaceousVegetation 28) remain answered. The layer catches confident errors **only when the threshold is raised above 0.50** (e.g., at 0.90, SeaLake–River drops to 1 error out of 769 answered; Forest–HerbaceousVegetation drops to 4 out of 816), but those higher thresholds were not the frozen rule and come at a substantial coverage cost (coverage falls from ~0.999 to ~0.86–0.92 across the pairs).
 
-The outcome is reported both ways as pre-registered: the abstention layer catches confident errors only when the threshold is raised above 0.50; at the frozen 0.50 threshold it catches essentially none.
+This matches the pre-registered statement: report both outcomes — the abstention layer does not catch confident errors at the frozen 0.50 threshold, but does reduce confident errors at higher thresholds.
 
 ---
 
@@ -113,7 +125,7 @@ The outcome is reported both ways as pre-registered: the abstention layer catche
 
 ## Outputs
 
-- `analysis/test_softmax.csv` — regenerated per-sample softmax for all 4,050 test files (overall accuracy verified 3,899/4,050)
+- `analysis/test_softmax.csv` — regenerated per-sample softmax for all 4,050 test files; regenerated output matches the aggregate 3,899/4,050 (0.9627). Per-file originals were not saved.
 - `analysis/abstention_by_class.csv` — per-class counts at threshold 0.50
 - `analysis/abstention_pairs_by_threshold.csv` — pair error rates across thresholds
 - `analysis/abstention_overall_by_threshold.csv` — overall coverage/answered accuracy across thresholds
