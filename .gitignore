@@ -19,3 +19,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Local logs and audit files (not part of the project)
+rerun_split.log
+train_log.txt
+PRE_SEND_CHECK.md
+PUBLISH_PREP.md
