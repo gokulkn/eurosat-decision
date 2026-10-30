@@ -1,0 +1,252 @@
+{
+  "note": "Benchmark result on EuroSAT only. Not a claim on any other imagery.",
+  "dataset": "EuroSAT (RGB, 10 classes, 64x64 Sentinel-2 patches)",
+  "source_url": "https://huggingface.co/datasets/torchgeo/eurosat/resolve/c877bcd43f099cd0196738f714544e355477f3fd/EuroSAT.zip",
+  "split_source": "our own fixed stratified 70/15/15 split, seed 42 (NOT a published benchmark split; torchvision EuroSAT ships no split)",
+  "splits": {
+    "train": 18900,
+    "val": 4050,
+    "test": 4050
+  },
+  "seeds": {
+    "DATA_SPLIT_SEED": 42,
+    "TRAIN_SEED": 42
+  },
+  "versions": {
+    "torch": "2.15.0+cpu",
+    "torchvision": "0.29.2+cpu"
+  },
+  "gpu_available": false,
+  "device": "cpu",
+  "input_size": [
+    64,
+    64
+  ],
+  "model": "ResNet-18 ImageNet-pretrained, fc replaced for 10 classes",
+  "checkpoint": "models/best.pt",
+  "checkpoint_sha256": "c6c5eed4be400498d8c43941e1115da72dcde94a37d73b358e6182923201716c",
+  "best_validation_accuracy": 0.9679,
+  "best_validation_note": "0.9679 is validation-selected (LR=0.0001, epoch 4); the test result below is the only unbiased figure.",
+  "classes": [
+    "AnnualCrop",
+    "Forest",
+    "HerbaceousVegetation",
+    "Highway",
+    "Industrial",
+    "Pasture",
+    "PermanentCrop",
+    "Residential",
+    "River",
+    "SeaLake"
+  ],
+  "n_total": 4050,
+  "overall_accuracy": 0.962716049382716,
+  "frozen_threshold": 0.5,
+  "coverage_at_threshold": 0.9938271604938271,
+  "accuracy_on_answered": 0.9649689440993788,
+  "n_answered": 4025,
+  "n_abstained": 25,
+  "per_class": {
+    "AnnualCrop": {
+      "index": 0,
+      "precision": 0.9689737470167065,
+      "recall": 0.9022222222222223,
+      "f1": 0.9344073647871116,
+      "support": 450
+    },
+    "Forest": {
+      "index": 1,
+      "precision": 0.9933333333333333,
+      "recall": 0.9933333333333333,
+      "f1": 0.9933333333333333,
+      "support": 450
+    },
+    "HerbaceousVegetation": {
+      "index": 2,
+      "precision": 0.963302752293578,
+      "recall": 0.9333333333333333,
+      "f1": 0.9480812641083521,
+      "support": 450
+    },
+    "Highway": {
+      "index": 3,
+      "precision": 0.9450261780104712,
+      "recall": 0.9626666666666667,
+      "f1": 0.9537648612945839,
+      "support": 375
+    },
+    "Industrial": {
+      "index": 4,
+      "precision": 0.9788359788359788,
+      "recall": 0.9866666666666667,
+      "f1": 0.9827357237715804,
+      "support": 375
+    },
+    "Pasture": {
+      "index": 5,
+      "precision": 0.959731543624161,
+      "recall": 0.9533333333333334,
+      "f1": 0.9565217391304348,
+      "support": 300
+    },
+    "PermanentCrop": {
+      "index": 6,
+      "precision": 0.8705035971223022,
+      "recall": 0.968,
+      "f1": 0.9166666666666666,
+      "support": 375
+    },
+    "Residential": {
+      "index": 7,
+      "precision": 1.0,
+      "recall": 0.9777777777777777,
+      "f1": 0.9887640449438202,
+      "support": 450
+    },
+    "River": {
+      "index": 8,
+      "precision": 0.9470899470899471,
+      "recall": 0.9546666666666667,
+      "f1": 0.950863213811421,
+      "support": 375
+    },
+    "SeaLake": {
+      "index": 9,
+      "precision": 0.9911504424778761,
+      "recall": 0.9955555555555555,
+      "f1": 0.9933481152993349,
+      "support": 450
+    }
+  },
+  "confusion_matrix": [
+    [
+      406,
+      0,
+      2,
+      2,
+      0,
+      2,
+      27,
+      0,
+      8,
+      3
+    ],
+    [
+      0,
+      447,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      0,
+      420,
+      4,
+      0,
+      6,
+      19,
+      0,
+      1,
+      0
+    ],
+    [
+      5,
+      0,
+      0,
+      361,
+      2,
+      2,
+      0,
+      0,
+      5,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      370,
+      0,
+      4,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      2,
+      5,
+      1,
+      0,
+      286,
+      2,
+      0,
+      3,
+      0
+    ],
+    [
+      4,
+      1,
+      4,
+      1,
+      0,
+      1,
+      363,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      3,
+      0,
+      5,
+      0,
+      2,
+      440,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      0,
+      12,
+      1,
+      1,
+      0,
+      0,
+      358,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      448
+    ]
+  ],
+  "sealake_water_class": {
+    "class": "SeaLake",
+    "index": 9,
+    "precision": 0.9911504424778761,
+    "recall": 0.9955555555555555,
+    "f1": 0.9933481152993349,
+    "support": 450,
+    "accuracy": 0.9955555555555555
+  }
+}
